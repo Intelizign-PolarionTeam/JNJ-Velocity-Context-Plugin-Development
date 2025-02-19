@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module id="com.jnj.configuration" version="1.0.0">
+	<service-point id="jnjConfiguration"
+		interface="com.jnj.configuration.IJNJProjectConfiguration"
+		visibility="public">
+		<invoke-factory>
+            <construct class="com.jnj.configuration.impl.JNJProjectConfiguration">                
+            </construct>
+        </invoke-factory>
+	</service-point>
+	
+	<contribution configuration-id="com.polarion.alm.richpages.velocityContext">
+		<item key="jnjConfiguration"	value="service:jnjConfiguration" />		
+	</contribution>
+	
+	<contribution configuration-id="com.polarion.alm.wiki.renderingContext">
+		<item key="jnjConfiguration"	value="service:jnjConfiguration" />		
+	</contribution>	
+
+</module>
