@@ -1,24 +1,29 @@
 package com.jnj.configuration.impl;
 
-
-
-import java.util.List;
-
 import com.jnj.configuration.IJNJProjectConfiguration;
-import com.jnj.configuration.model.Person;
-import com.jnj.configuration.service.JsonReader;
+import com.jnj.configuration.service.JsonReaderService;
+
+
 
 public class JNJProjectConfiguration implements IJNJProjectConfiguration {
 	
-	private final JsonReader readerService;
-
-    public JNJProjectConfiguration() {
-        this.readerService = new JsonReader();
-    }
+	private JsonReaderService jsonReaderService;
+	
+	public JNJProjectConfiguration() {
+		this.jsonReaderService = new JsonReaderService();
+	}
 
 	@Override
-	public List<Person> getPersonList() {
-		List<Person> persons = readerService.readJsonFile();
-        return persons;
+	public Object getJsonData(String fileName, String key) {
+		Object jsonValue = jsonReaderService.getJsonValues(fileName, key);
+		return jsonValue;
 	}
+
+
+
+ 
+
+    
+
+    
 }
