@@ -1,6 +1,11 @@
 package com.jnj.configuration.service;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -78,23 +83,76 @@ public class JsonReaderService {
 			}
 			System.out.println("current Json Object is" + jsonAttributeValues+"\n");
 		
-			 // Handle different JSON value types
-	        if (jsonAttributeValues.isJsonPrimitive()) {
-	            JsonPrimitive objectType = jsonAttributeValues.getAsJsonPrimitive();
-	            
-	            if (objectType.isString()) {
-	                return objectType.getAsString();
-	            } else if (objectType.isNumber()) {
-	                return objectType.getAsNumber();
-	            } else if (objectType.isBoolean()) {
-	                return objectType.getAsBoolean();
-	            }
-	        } else if (jsonAttributeValues.isJsonObject() || jsonAttributeValues.isJsonArray()) {
-	        	System.out.println("Its working");
-	        	System.out.println("Json Attribute value"+ jsonAttributeValues.toString());
-	            return jsonAttributeValues.toString(); 
-	        }
-
-        return jsonAttributeValues;  
+			return processJsonElement(jsonAttributeValues);  
 	}	
+	 /**
+	  * Processes a given JsonElement and returns an appropriate value based on its type.
+	  * It checks if the element is a JsonArray, JsonObject, or a primitive value and processes accordingly.
+	  *
+	  * @param element The JsonElement to process.
+	  * @return The processed value based on the type of the JsonElement.
+	  */
+	 private static Object processJsonElement(JsonElement element) {
+	     if (element.isJsonArray()) {
+	         return iterateJsonArray(element.getAsJsonArray());
+	     }
+	     else if (element.isJsonObject()) {
+	         return iterateJsonObject(element.getAsJsonObject());
+	     }
+	     else if (element.isJsonPrimitive()) {
+	         return getPrimitiveValue(element);
+	     }
+	     return null;
+	 }
+
+	 /**
+	  * Iterates over a JsonArray and processes each element by calling processJsonElement() method.
+	  *
+	  * @param jsonArray The JsonArray to iterate over.
+	  * @return A list of processed values corresponding to each element in the JsonArray.
+	  */
+	 private static List<Object> iterateJsonArray(JsonArray jsonArray) {
+	     List<Object> processedList = new ArrayList<>();
+	     for (JsonElement jsonElement : jsonArray) {
+	         processedList.add(processJsonElement(jsonElement));
+	     }
+	     System.out.println("Processed List" + processedList + "\n");
+	     return processedList;
+	 }
+
+	 /**
+	  * Iterates over a JsonObject and processes each entry by calling processJsonElement() method.
+	  *
+	  * @param jsonObject The JsonObject to iterate over.
+	  * @return A map with keys as the field names and values as the processed values of each field.
+	  */
+	 private static Map<String, Object> iterateJsonObject(JsonObject jsonObject) {
+	     Map<String, Object> processedMap = new LinkedHashMap<>();
+	     for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
+	         processedMap.put(entry.getKey(), processJsonElement(entry.getValue()));
+	     }
+	     System.out.println("Processed Map" + processedMap + "\n");
+	     return processedMap;
+	 }
+
+	 /**
+	  * Extracts the primitive value from a JsonElement, handling String, Number, and Boolean types.
+	  *
+	  * @param element The JsonElement to extract the primitive value from.
+	  * @return The primitive value as an Object (String, Number, or Boolean), or null if not supported.
+	  */
+	 private static Object getPrimitiveValue(JsonElement element) {
+	     JsonPrimitive primitive = element.getAsJsonPrimitive();
+	     if (primitive.isString()) {
+	         return primitive.getAsString();
+	     }
+	     else if (primitive.isNumber()) {
+	         return primitive.getAsNumber();
+	     }
+	     else if (primitive.isBoolean()) {
+	         return primitive.getAsBoolean();
+	     }
+	     return null;
+	 }
+
 }
